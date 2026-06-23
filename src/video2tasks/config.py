@@ -48,17 +48,34 @@ class RemoteAPIConfig(BaseModel):
     headers: dict = Field(default_factory=dict, description="Extra headers for remote API")
 
 
+class OpenAIChatConfig(BaseModel):
+    """OpenAI-compatible chat/vision backend configuration."""
+    base_url: str = Field(
+        default="https://aihubmix.com/v1",
+        description="Base URL ending with /v1",
+    )
+    api_key: str = Field(default="", description="Bearer API key")
+    model: str = Field(default="qwen3.5-397b-a17b", description="Model id")
+    timeout_sec: float = Field(default=120.0, description="Request timeout in seconds")
+    max_tokens: int = Field(
+        default=2048,
+        description="Output token budget: max_tokens (default) or MiMo maps to max_completion_tokens",
+    )
+    headers: dict = Field(default_factory=dict, description="Extra headers")
+
+
 class WorkerConfig(BaseModel):
     """Worker configuration."""
     server_url: str = Field(default="http://127.0.0.1:8099", description="Server URL")
     backend: str = Field(default="dummy", description="VLM backend type")
     qwen3vl: Qwen3VLConfig = Field(default_factory=Qwen3VLConfig)
     remote_api: RemoteAPIConfig = Field(default_factory=RemoteAPIConfig)
+    openai_chat: OpenAIChatConfig = Field(default_factory=OpenAIChatConfig)
 
     @field_validator("backend")
     @classmethod
     def validate_backend(cls, v: str) -> str:
-        allowed = ["dummy", "qwen3vl", "remote_api"]
+        allowed = ["dummy", "qwen3vl", "remote_api", "openai_chat"]
         if v not in allowed:
             raise ValueError(f"backend must be one of {allowed}, got {v}")
         return v
@@ -147,6 +164,22 @@ class Config(BaseModel):
             if not isinstance(headers, dict):
                 raise ValueError("REMOTE_API_HEADERS must be a JSON object")
             config.worker.remote_api.headers = headers
+        if "OPENAI_CHAT_BASE_URL" in os.environ:
+            config.worker.openai_chat.base_url = os.environ["OPENAI_CHAT_BASE_URL"]
+        if "OPENAI_CHAT_API_KEY" in os.environ:
+            config.worker.openai_chat.api_key = os.environ["OPENAI_CHAT_API_KEY"]
+        if "OPENAI_CHAT_MODEL" in os.environ:
+            config.worker.openai_chat.model = os.environ["OPENAI_CHAT_MODEL"]
+        if "OPENAI_CHAT_TIMEOUT" in os.environ:
+            config.worker.openai_chat.timeout_sec = float(os.environ["OPENAI_CHAT_TIMEOUT"])
+        if "OPENAI_CHAT_MAX_TOKENS" in os.environ:
+            config.worker.openai_chat.max_tokens = int(os.environ["OPENAI_CHAT_MAX_TOKENS"])
+        if "OPENAI_CHAT_HEADERS" in os.environ:
+            headers_raw = os.environ["OPENAI_CHAT_HEADERS"]
+            headers = json.loads(headers_raw)
+            if not isinstance(headers, dict):
+                raise ValueError("OPENAI_CHAT_HEADERS must be a JSON object")
+            config.worker.openai_chat.headers = headers
         
         return config
     

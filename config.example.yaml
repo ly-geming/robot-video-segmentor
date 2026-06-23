@@ -24,7 +24,7 @@ server:
 # Worker configuration
 worker:
   server_url: "http://127.0.0.1:8099"
-  backend: "dummy"  # Options: "dummy", "qwen3vl", "remote_api"
+  backend: "dummy"  # Options: "dummy", "qwen3vl", "remote_api", "openai_chat"
   
   # Qwen3VL-specific settings (only used when backend: qwen3vl)
   qwen3vl:
@@ -36,6 +36,16 @@ worker:
     api_url: "http://127.0.0.1:8080/infer"
     api_key: ""
     timeout_sec: 60.0
+    headers: {}
+
+  # OpenAI-compatible chat/vision backend (only used when backend: openai_chat)
+  # Example provider: AIHubMix
+  openai_chat:
+    base_url: "https://aihubmix.com/v1"
+    api_key: ""
+    model: "qwen3.5-397b-a17b"
+    timeout_sec: 120.0
+    max_tokens: 2048
     headers: {}
 
 # Windowing configuration

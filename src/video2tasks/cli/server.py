@@ -3,7 +3,7 @@
 import click
 from pathlib import Path
 from ..config import Config
-from .app import run_server
+from ..server.app import run_server
 
 
 @click.command()

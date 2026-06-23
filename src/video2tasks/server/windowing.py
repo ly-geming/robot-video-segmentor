@@ -204,7 +204,7 @@ def build_segments_via_cuts(
     
     if raw_cuts:
         raw_cuts.sort(key=lambda x: x[0])
-        cluster_gap = max(1.0, 2.5 * fps)
+        cluster_gap = max(0.5, 0.5 * fps)
         cur_frames = []
         cur_weights = []
         
@@ -242,7 +242,7 @@ def build_segments_via_cuts(
     
     for i in range(len(final_cut_points) - 1):
         s, e = int(final_cut_points[i]), int(final_cut_points[i + 1])
-        min_frames = max(1, int(0.8 * fps))
+        min_frames = max(1, int(0.3 * fps))
         
         if (e - s) < min_frames:
             continue

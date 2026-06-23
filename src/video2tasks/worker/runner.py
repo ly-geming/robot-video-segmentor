@@ -55,6 +55,15 @@ def run_worker(config: Config) -> None:
             "headers": config.worker.remote_api.headers,
             "timeout_sec": config.worker.remote_api.timeout_sec,
         }
+    elif config.worker.backend == "openai_chat":
+        backend_kwargs = {
+            "base_url": config.worker.openai_chat.base_url,
+            "api_key": config.worker.openai_chat.api_key,
+            "model": config.worker.openai_chat.model,
+            "timeout_sec": config.worker.openai_chat.timeout_sec,
+            "max_tokens": config.worker.openai_chat.max_tokens,
+            "headers": config.worker.openai_chat.headers,
+        }
     
     backend = create_backend(config.worker.backend, **backend_kwargs)
     print(f"[Worker] Using backend: {backend.name}")

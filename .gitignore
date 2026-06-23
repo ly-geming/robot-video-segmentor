@@ -30,6 +30,9 @@ logs/
 *.zip
 *.tar.gz
 
+# Merged data + annotations (egodex_postprocess.py)
+processed_Data/
+
 # Run outputs (produced by server)
 runs/
 samples/
